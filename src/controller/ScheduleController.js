@@ -49,6 +49,26 @@ class ScheduleController {
     }
   }
 
+  // route to end service
+  async serviceFinished(request, response) {
+    const id = request.params.id;
+    const { description } = request.body;
+
+    // only the description must be updated by the nurse
+    const schedule = await ScheduleModel.findByIdAndUpdate(
+      id,
+      {
+        isFinished: true,
+        description,
+      },
+      {
+        new: true,
+      },
+    );
+
+    response.status(200).json({ message: 'Service finished!', schedule });
+  }
+
   async update(request, response) {
     const id = request.params.id;
     const {
@@ -56,7 +76,7 @@ class ScheduleController {
       birthDate,
       appointmentDate,
       appointmentHour,
-      servicedFinished,
+      isFinished,
       description,
     } = request.body;
 
@@ -67,7 +87,7 @@ class ScheduleController {
         birthDate,
         appointmentDate,
         appointmentHour,
-        servicedFinished,
+        isFinished,
         description,
       },
       {

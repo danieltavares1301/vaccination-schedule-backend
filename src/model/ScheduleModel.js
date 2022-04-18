@@ -6,7 +6,7 @@ const ScheduleSchema = new mongoose.Schema(
     appointmentDate: { type: Date, required: true },
     appointmentHour: { type: Number, required: true },
     birthDate: { type: Date, required: true },
-    servicedFinished: { type: Boolean, default: false },
+    isFinished: { type: Boolean, default: false },
     description: { type: String },
   },
   {
