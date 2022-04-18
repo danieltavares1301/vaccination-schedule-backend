@@ -12,4 +12,6 @@ router.get('/schedule', scheduleController.index);
 
 router.post('/schedule', scheduleController.store);
 
+router.put('/schedule/:id', scheduleController.update);
+
 export default router;

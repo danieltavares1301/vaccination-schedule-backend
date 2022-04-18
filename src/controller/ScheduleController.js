@@ -48,6 +48,37 @@ class ScheduleController {
         .json({ message: 'Appointment day with unavailable vacancies!' });
     }
   }
+
+  async update(request, response) {
+    const id = request.params.id;
+    const {
+      name,
+      birthDate,
+      appointmentDate,
+      appointmentHour,
+      servicedFinished,
+      description,
+    } = request.body;
+
+    const schedule = await ScheduleModel.findByIdAndUpdate(
+      id,
+      {
+        name,
+        birthDate,
+        appointmentDate,
+        appointmentHour,
+        servicedFinished,
+        description,
+      },
+      {
+        new: true,
+      },
+    );
+
+    response
+      .status(200)
+      .json({ message: 'Schedule successfully updated!!', schedule });
+  }
 }
 
 export default ScheduleController;
