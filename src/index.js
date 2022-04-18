@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import PatientRouter from './router/PatientRouter.js';
+import ScheduleRouter from './router/ScheduleRouter.js';
 import cors from 'cors';
 import mongoose from 'mongoose';
 
@@ -28,7 +28,7 @@ app.get('/', (request, response) => {
 
 app.use(cors());
 
-app.use(PatientRouter);
+app.use(ScheduleRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
