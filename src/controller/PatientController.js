@@ -1,44 +1,52 @@
 import PatientModel from '../model/PatientModel.js';
-import dotenv from 'dotenv';
 
-dotenv.config();
-
-// toda a lógica que busca as informações no Model e devolve uma resposta ao usuário
 class PatientController {
-  //retorna todos
   async index(request, response) {
-    // const { name, appointmentDate, appointmentHour, birthDate } = request.body;
-    // const limitDay = 20;
-    // const limitHour = 2;
-    // const qtdDay = await PatientModel.countDocuments({ day: appointmentDate });
-    // const qtdHour = await PatientModel.countDocuments({
-    //   hour: appointmentDate,
-    // });
+    // appointments sorted by day and time
+    const patients = await PatientModel.find()
+      .sort('appointmentDate')
+      .sort('appointmentHour');
 
-    // response.send(qtdDay, qtdHour);
-
-    const patients = await PatientModel.find();
-    response.send(patients);
+    response.status(200).send(patients);
   }
 
-  //POST
   async store(request, response) {
-    const { name, appointmentDate, appointmentHour, birthDate } = request.body;
-    const limitDay = 20;
-    const limitHour = 2;
-    const qtdDay = await PatientModel.countDocuments({ day: appointmentDate });
-    const qtdHour = await PatientModel.countDocuments({
-      hour: appointmentDate,
+    const { name, birthDate, appointmentDate, appointmentHour } = request.body;
+
+    // counts how many times the day was registered
+    const countDays = await PatientModel.countDocuments({
+      appointmentDate: appointmentDate,
     });
 
-    const patient = await PatientModel.create({
-      name,
-      appointmentHour,
-      appointmentDate,
-      birthDate,
-    });
+    // counts how many times the schedule has been registered
+    const countSchedule = await PatientModel.where({
+      appointmentDate: appointmentDate,
+    }).countDocuments({ appointmentHour: appointmentHour });
 
-    response.send({ message: 'patient created', patient });
+    // if there are less than 20 appointments on the day
+    if (countDays < 20) {
+      // if there are less than 2 schedules availables, the patient will be registered
+      if (countSchedule < 2) {
+        const patient = await PatientModel.create({
+          name,
+          appointmentHour,
+          appointmentDate,
+          birthDate,
+        });
+
+        response
+          .status(200)
+          .json({ message: 'patient scheduled successfully!', patient });
+      } else {
+        return response.status(400).json({
+          message: 'Appointment schedule with unavailable vacancies!',
+        });
+      }
+    } else {
+      return response
+        .status(400)
+        .json({ message: 'Appointment day with unavailable vacancies!' });
+    }
   }
 }
 
