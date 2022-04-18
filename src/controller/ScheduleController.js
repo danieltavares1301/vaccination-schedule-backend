@@ -1,25 +1,25 @@
-import PatientModel from '../model/PatientModel.js';
+import ScheduleModel from '../model/ScheduleModel.js';
 
-class PatientController {
+class ScheduleController {
   async index(request, response) {
     // appointments sorted by day and time
-    const patients = await PatientModel.find()
+    const schedules = await ScheduleModel.find()
       .sort('appointmentDate')
       .sort('appointmentHour');
 
-    response.status(200).send(patients);
+    response.status(200).send(schedules);
   }
 
   async store(request, response) {
     const { name, birthDate, appointmentDate, appointmentHour } = request.body;
 
     // counts how many times the day was registered
-    const countDays = await PatientModel.countDocuments({
+    const countDays = await ScheduleModel.countDocuments({
       appointmentDate: appointmentDate,
     });
 
     // counts how many times the schedule has been registered
-    const countSchedule = await PatientModel.where({
+    const countSchedule = await ScheduleModel.where({
       appointmentDate: appointmentDate,
     }).countDocuments({ appointmentHour: appointmentHour });
 
@@ -27,7 +27,7 @@ class PatientController {
     if (countDays < 20) {
       // if there are less than 2 schedules availables, the patient will be registered
       if (countSchedule < 2) {
-        const patient = await PatientModel.create({
+        const schedule = await ScheduleModel.create({
           name,
           appointmentHour,
           appointmentDate,
@@ -36,7 +36,7 @@ class PatientController {
 
         response
           .status(200)
-          .json({ message: 'patient scheduled successfully!', patient });
+          .json({ message: 'Appointment successfully registered!', schedule });
       } else {
         return response.status(400).json({
           message: 'Appointment schedule with unavailable vacancies!',
@@ -50,4 +50,4 @@ class PatientController {
   }
 }
 
-export default PatientController;
+export default ScheduleController;
