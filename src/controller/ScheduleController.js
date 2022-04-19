@@ -5,13 +5,13 @@ class ScheduleController {
     // appointments sorted by day and time
     const schedules = await ScheduleModel.find()
       .sort('appointmentDate')
-      .sort('appointmentHour');
+      .sort('appointmentTime');
 
     response.status(200).send(schedules);
   }
 
   async store(request, response) {
-    const { name, birthDate, appointmentDate, appointmentHour } = request.body;
+    const { name, birthDate, appointmentDate, appointmentTime } = request.body;
 
     // counts how many times the day was registered
     const countDays = await ScheduleModel.countDocuments({
@@ -21,7 +21,7 @@ class ScheduleController {
     // counts how many times the schedule has been registered
     const countSchedule = await ScheduleModel.where({
       appointmentDate: appointmentDate,
-    }).countDocuments({ appointmentHour: appointmentHour });
+    }).countDocuments({ appointmentTime: appointmentTime });
 
     // if there are less than 20 appointments on the day
     if (countDays < 20) {
@@ -29,7 +29,7 @@ class ScheduleController {
       if (countSchedule < 2) {
         const schedule = await ScheduleModel.create({
           name,
-          appointmentHour,
+          appointmentTime,
           appointmentDate,
           birthDate,
         });
@@ -75,7 +75,7 @@ class ScheduleController {
       name,
       birthDate,
       appointmentDate,
-      appointmentHour,
+      appointmentTime,
       isFinished,
       description,
     } = request.body;
@@ -86,7 +86,7 @@ class ScheduleController {
         name,
         birthDate,
         appointmentDate,
-        appointmentHour,
+        appointmentTime,
         isFinished,
         description,
       },
