@@ -4,7 +4,7 @@ const ScheduleSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     appointmentDate: { type: Date, required: true },
-    appointmentHour: { type: Number, required: true },
+    appointmentTime: { type: Number, required: true },
     birthDate: { type: Date, required: true },
     isFinished: { type: Boolean, default: false },
     description: { type: String },
