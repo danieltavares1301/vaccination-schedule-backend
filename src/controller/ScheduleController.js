@@ -2,12 +2,15 @@ import ScheduleModel from '../model/ScheduleModel.js';
 
 class ScheduleController {
   async index(request, response) {
-    // appointments sorted by day and time
-    const schedules = await ScheduleModel.find()
-      .sort('appointmentDate')
-      .sort('appointmentTime');
-
-    response.status(200).send(schedules);
+    try {
+      // appointments sorted by day and time
+      const schedules = await ScheduleModel.find()
+        .sort('appointmentDate')
+        .sort('appointmentTime');
+      response.status(200).send(schedules);
+    } catch (error) {
+      response.status(404).json({ message: 'Request failed!' });
+    }
   }
 
   async store(request, response) {
@@ -27,16 +30,23 @@ class ScheduleController {
     if (countDays < 20) {
       // if there are less than 2 schedules availables, the patient will be registered
       if (countSchedule < 2) {
-        const schedule = await ScheduleModel.create({
-          name,
-          appointmentTime,
-          appointmentDate,
-          birthDate,
-        });
+        try {
+          const schedule = await ScheduleModel.create({
+            name,
+            appointmentTime,
+            appointmentDate,
+            birthDate,
+          });
 
-        response
-          .status(200)
-          .json({ message: 'Appointment successfully registered!', schedule });
+          response.status(201).json({
+            message: 'Appointment successfully registered!',
+            schedule,
+          });
+        } catch {
+          response
+            .status(400)
+            .json({ message: 'Error sending information in the request!' });
+        }
       } else {
         return response.status(400).json({
           message: 'Appointment schedule with unavailable vacancies!',
@@ -54,19 +64,26 @@ class ScheduleController {
     const id = request.params.id;
     const { description } = request.body;
 
-    // only the description must be updated by the nurse
-    const schedule = await ScheduleModel.findByIdAndUpdate(
-      id,
-      {
-        isFinished: true,
-        description,
-      },
-      {
-        new: true,
-      },
-    );
+    try {
+      // only the description must be updated by the nurse
+      const schedule = await ScheduleModel.findByIdAndUpdate(
+        id,
+        {
+          isFinished: true,
+          description,
+        },
+        {
+          new: true,
+        },
+      );
 
-    response.status(200).json({ message: 'Service finished!', schedule });
+      response.status(201).json({ message: 'Service finished!', schedule });
+    } catch {
+      response.status(400).json({
+        message: 'Error sending information in the request!',
+        schedule,
+      });
+    }
   }
 
   async update(request, response) {
@@ -79,25 +96,30 @@ class ScheduleController {
       isFinished,
       description,
     } = request.body;
+    try {
+      const schedule = await ScheduleModel.findByIdAndUpdate(
+        id,
+        {
+          name,
+          birthDate,
+          appointmentDate,
+          appointmentTime,
+          isFinished,
+          description,
+        },
+        {
+          new: true,
+        },
+      );
 
-    const schedule = await ScheduleModel.findByIdAndUpdate(
-      id,
-      {
-        name,
-        birthDate,
-        appointmentDate,
-        appointmentTime,
-        isFinished,
-        description,
-      },
-      {
-        new: true,
-      },
-    );
-
-    response
-      .status(200)
-      .json({ message: 'Schedule successfully updated!!', schedule });
+      response
+        .status(201)
+        .json({ message: 'Schedule successfully updated!', schedule });
+    } catch {
+      response
+        .status(400)
+        .json({ message: 'Error sending information in the request!' });
+    }
   }
 }
 
