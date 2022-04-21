@@ -22,10 +22,6 @@ mongoose
 
 app.use(express.json());
 
-app.get('/', (request, response) => {
-  response.json({ message: 'ok' });
-});
-
 app.use(cors());
 
 app.use(ScheduleRouter);
