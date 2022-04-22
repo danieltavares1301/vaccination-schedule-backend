@@ -1,4 +1,4 @@
-import ScheduleModel from '../model/ScheduleModel.js';
+const ScheduleModel = require('../model/ScheduleModel.js');
 
 class ScheduleController {
   async index(request, response) {
@@ -123,4 +123,4 @@ class ScheduleController {
   }
 }
 
-export default ScheduleController;
+module.exports = ScheduleController;

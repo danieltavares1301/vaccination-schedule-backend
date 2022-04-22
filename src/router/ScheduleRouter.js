@@ -1,5 +1,5 @@
-import express from 'express';
-import ScheduleController from '../controller/ScheduleController.js';
+const express = require('express');
+const ScheduleController = require('../controller/ScheduleController.js');
 
 const scheduleController = new ScheduleController();
 
@@ -16,4 +16,4 @@ router.put('/schedule/:id', scheduleController.update);
 
 router.put('/schedule/serviceFinished/:id', scheduleController.serviceFinished);
 
-export default router;
+module.exports = router;
