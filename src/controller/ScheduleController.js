@@ -1,4 +1,4 @@
-import ScheduleModel from '../model/ScheduleModel.js';
+const ScheduleModel = require('../model/ScheduleModel.js');
 
 class ScheduleController {
   async index(request, response) {
@@ -10,6 +10,21 @@ class ScheduleController {
       response.status(200).send(schedules);
     } catch (error) {
       response.status(404).json({ message: 'Request failed!' });
+    }
+  }
+
+  async getOne(request, response) {
+    const id = request.params.id;
+
+    try {
+      const appointment = await ScheduleModel.findById(id);
+
+      if (appointment) {
+        return response.send(appointment);
+      }
+      response.status(404).send({ message: 'User not found' });
+    } catch {
+      response.status(400).send({ message: 'An unexpected error happened' });
     }
   }
 
@@ -49,7 +64,7 @@ class ScheduleController {
         }
       } else {
         return response.status(400).json({
-          message: 'Appointment schedule with unavailable vacancies!',
+          message: 'Appointment time with unavailable vacancies!',
         });
       }
     } else {
@@ -63,64 +78,31 @@ class ScheduleController {
   async serviceFinished(request, response) {
     const id = request.params.id;
     const { description } = request.body;
-
+    const appointment = await ScheduleModel.findById(id);
     try {
-      // only the description must be updated by the nurse
-      const schedule = await ScheduleModel.findByIdAndUpdate(
-        id,
-        {
-          isFinished: true,
-          description,
-        },
-        {
-          new: true,
-        },
-      );
+      if (appointment) {
+        // only the description must be updated by the nurse
+        const schedule = await ScheduleModel.findByIdAndUpdate(
+          id,
+          {
+            isFinished: true,
+            description,
+          },
+          {
+            new: true,
+          },
+        );
 
-      response.status(201).json({ message: 'Service finished!', schedule });
+        response.status(201).json({ message: 'Service finished!', schedule });
+      } else {
+        response.status(404).json({ message: 'User not found' });
+      }
     } catch {
       response.status(400).json({
         message: 'Error sending information in the request!',
-        schedule,
       });
-    }
-  }
-
-  async update(request, response) {
-    const id = request.params.id;
-    const {
-      name,
-      birthDate,
-      appointmentDate,
-      appointmentTime,
-      isFinished,
-      description,
-    } = request.body;
-    try {
-      const schedule = await ScheduleModel.findByIdAndUpdate(
-        id,
-        {
-          name,
-          birthDate,
-          appointmentDate,
-          appointmentTime,
-          isFinished,
-          description,
-        },
-        {
-          new: true,
-        },
-      );
-
-      response
-        .status(201)
-        .json({ message: 'Schedule successfully updated!', schedule });
-    } catch {
-      response
-        .status(400)
-        .json({ message: 'Error sending information in the request!' });
     }
   }
 }
 
-export default ScheduleController;
+module.exports = ScheduleController;
