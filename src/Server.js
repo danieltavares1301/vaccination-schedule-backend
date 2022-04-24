@@ -17,10 +17,6 @@ mongoose
     console.error('Error to connected to database: ' + error.message),
   );
 
-app.get('/', (request, response) => {
-  response.status(200).json({ message: 'success!' });
-});
-
 app.use(express.json());
 
 app.use(cors());
