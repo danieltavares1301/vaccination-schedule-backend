@@ -1,12 +1,12 @@
 const request = require('supertest');
-const app = require('./Server.js');
-const ScheduleModel = require('./model/ScheduleModel');
+const app = require('../Server.js');
+const ScheduleModel = require('../model/ScheduleModel');
 const mongoose = require('mongoose');
 
 const schedulesTest = {
   name: 'Patient test',
   appointmentDate: '2022-04-11T17:07:43.258Z',
-  appointmentTime: 9,
+  appointmentTime: 4,
   birthDate: '2001-04-22T17:07:43.258Z',
 };
 
