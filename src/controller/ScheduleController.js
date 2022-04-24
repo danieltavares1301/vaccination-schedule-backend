@@ -3,7 +3,7 @@ const ScheduleModel = require('../model/ScheduleModel.js');
 class ScheduleController {
   async index(request, response) {
     try {
-      // appointments sorted by day and time
+      // agendamentos ordenados primeiramente em data e depois em horário
       const schedules = await ScheduleModel.find()
         .sort('appointmentDate')
         .sort('appointmentTime');
@@ -31,19 +31,19 @@ class ScheduleController {
   async store(request, response) {
     const { name, birthDate, appointmentDate, appointmentTime } = request.body;
 
-    // counts how many times the day was registered
+    // conta quantas agendamentos tem o dia selecionado
     const countDays = await ScheduleModel.countDocuments({
       appointmentDate: appointmentDate,
     });
 
-    // counts how many times the schedule has been registered
+    // conta quantas vezes o horário foi registrado naquele dia selecionado
     const countSchedule = await ScheduleModel.where({
       appointmentDate: appointmentDate,
     }).countDocuments({ appointmentTime: appointmentTime });
 
-    // if there are less than 20 appointments on the day
+    // se existir menos de agendamentos
     if (countDays < 20) {
-      // if there are less than 2 schedules availables, the patient will be registered
+      // se houver menos de 2 horários disponíveis, o paciente será cadastrado
       if (countSchedule < 2) {
         try {
           const schedule = await ScheduleModel.create({
@@ -74,14 +74,15 @@ class ScheduleController {
     }
   }
 
-  // route to end service
+  // rota para o fim do atendimento
   async serviceFinished(request, response) {
     const id = request.params.id;
     const { description } = request.body;
     const appointment = await ScheduleModel.findById(id);
     try {
       if (appointment) {
-        // only the description must be updated by the nurse
+        // apenas a descrição deve ser atualizada pelo(a) enfermeiro(a),
+        // pois o atendimento vai para true automaticamente
         const schedule = await ScheduleModel.findByIdAndUpdate(
           id,
           {

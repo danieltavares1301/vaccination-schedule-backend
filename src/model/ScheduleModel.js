@@ -10,7 +10,7 @@ const ScheduleSchema = new mongoose.Schema(
     description: { type: String, default: '' },
   },
   {
-    // automatically adds creation and modification date
+    // adiciona automaticamente data de criação e modificação
     timestamps: true,
   },
 );
